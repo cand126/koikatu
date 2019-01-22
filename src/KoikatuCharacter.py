@@ -1,17 +1,20 @@
 import io
 import struct
+from pathlib import Path
 
 import msgpack
 
 
 class KoikatuCharacter:
     def __init__(self, file_path: str):
-        data = None
-        with open(filename, "br") as f:
-            data = f.read()
+        try:
+            with Path(file_path).open('br') as f:
+                png_data = f.read()
+        except FileNotFoundError as e:
+            raise FileNotFoundError('Cannot find file %s', file_path) from e
 
-        self.png_length = self._get_png_length(data)
-        data_stream = io.BytesIO(data)
+        self.png_length = self._get_png_length(png_data)
+        data_stream = io.BytesIO(png_data)
         self.png_data = data_stream.read(self.png_length)
         self.product_no = struct.unpack("i", data_stream.read(4))[0]  # 100
         data_stream.read(20)  # b"\x12【KoiKatuChara】\x05"
@@ -23,9 +26,9 @@ class KoikatuCharacter:
         self.blockdata = msgpack.unpackb(data_stream.read(blockdata_size), raw=False)
         charadata_size = struct.unpack("q", data_stream.read(8))[0]
 
-        data = data_stream.read()
+        png_data = data_stream.read()
         for i in self.blockdata["lstInfo"]:
-            data_part = data[i["pos"]:i["pos"] + i["size"]]
+            data_part = png_data[i["pos"]:i["pos"] + i["size"]]
             if i["name"] == "Custom":
                 self._load_custom(data_part)
             elif i["name"] == "Coordinate":
