@@ -1,12 +1,10 @@
-#!/usr/bin/env python
-
 import io
 import struct
 
 import msgpack
 
 
-class KoikatuCharaData:
+class KoikatuCharacter:
     def __init__(self, filename):
         data = None
         with open(filename, "br") as f:
