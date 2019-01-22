@@ -5,7 +5,7 @@ import msgpack
 
 
 class KoikatuCharacter:
-    def __init__(self, filename):
+    def __init__(self, file_path: str):
         data = None
         with open(filename, "br") as f:
             data = f.read()
@@ -151,13 +151,3 @@ class KoikatuCharacter:
             ]
             data.append(b"".join(coordinate))
         return msgpack.packb(data, use_bin_type=True)
-
-
-def main():
-    k = KoikatuCharaData("sa.png")
-    # print(json.dumps(k.coordinates[0]["makeup"], indent=2))
-    k.save("si.png")
-
-
-if __name__ == '__main__':
-    main()
